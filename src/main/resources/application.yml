@@ -8,6 +8,16 @@ spring:
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  flyway:
+    enabled: true # Flyway 활성화
+    # 마이그레이션 파일 위치 지정 (기본값)
+    locations: classpath:db/migration
+
+  # Swagger UI 설정 (Springdoc)
+  springdoc:
+    swagger-ui:
+      enabled: true
+
   # JPA 및 Hibernate 설정
   jpa:
     hibernate:
