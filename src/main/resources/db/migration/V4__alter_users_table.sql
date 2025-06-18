@@ -1,0 +1,2 @@
+ALTER TABLE `user` ADD updatedAt datetime DEFAULT CURRENT_TIMESTAMP  NULL;
+ALTER TABLE `user` ADD status varchar(10) DEFAULT 'ACTIVE' NULL ;

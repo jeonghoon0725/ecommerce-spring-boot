@@ -2,7 +2,9 @@ package com.home.java_02;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /*
 - **`CategoryFlatDto` 클래스**
@@ -26,13 +28,25 @@ class CategoryFlatDto {
     this.name = name;
     this.parentId = parentId;
   }
+
+  public Long getId() {
+    return id;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public Long getParentId() {
+    return parentId;
+  }
 }
 
 class CategoryTreeDto {
 
   Long id;
   String name;
-  List<CategoryTreeDto> children;
+  List<CategoryTreeDto> children = new ArrayList<>();
 
   public Long getId() {
     return id;
@@ -45,6 +59,14 @@ class CategoryTreeDto {
   public List<CategoryTreeDto> getChildren() {
     return children;
   }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
 }
 
 
@@ -54,12 +76,33 @@ public class JavaExample {
   static class CategoryConverter {
 
     public List<CategoryTreeDto> convertToTree(List<CategoryFlatDto> categoryFlatList) {
+      Map<Long, CategoryTreeDto> idToNodeMap = new HashMap<>();
       List<CategoryTreeDto> rootList = new ArrayList<>();
 
       // 1. map 으로 노드 생성
+      for (CategoryFlatDto flatDto : categoryFlatList) {
+        CategoryTreeDto categoryTreeDto = new CategoryTreeDto();
+        categoryTreeDto.setId(flatDto.getId());
+        categoryTreeDto.setName(flatDto.getName());
+        idToNodeMap.put(flatDto.getId(), categoryTreeDto);
+      }
 
       // 2. 부모-자식 연결
+      for (CategoryFlatDto flatDto : categoryFlatList) {
+        CategoryTreeDto node = idToNodeMap.get(flatDto.getId());
+        if (flatDto.getParentId() == null) {
+          rootList.add(node);
+        } else {
+          CategoryTreeDto parent = idToNodeMap.get(flatDto.getParentId());
+          if (parent != null) {
+            parent.getChildren().add(node);
+          } else {
+            System.out.println("⚠ 잘못된 parentId: " + flatDto.getParentId());
+          }
+        }
+      }
 
+      //
       return rootList;
     }
   }
