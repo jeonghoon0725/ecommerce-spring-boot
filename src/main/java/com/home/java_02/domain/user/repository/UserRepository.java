@@ -13,7 +13,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
   Optional<User> findFirstByNameAndEmail(String name, String email);
   //find는 있을수도 없을수도 -> 옵셔널로
 
-  //jpql
+  //jpql  -> queryDSL
   @Query("SELECT u FROM User u WHERE u.name = :name AND u.email = :email")
   Optional<User> findUser(String name, String email);
 
