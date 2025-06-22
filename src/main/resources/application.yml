@@ -8,16 +8,6 @@ spring:
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
 
-  flyway:
-    enabled: true # Flyway 활성화
-    # 마이그레이션 파일 위치 지정 (기본값)
-    locations: classpath:db/migration
-
-  # Swagger UI 설정 (Springdoc)
-  springdoc:
-    swagger-ui:
-      enabled: true
-
   # JPA 및 Hibernate 설정
   jpa:
     hibernate:
@@ -30,13 +20,25 @@ spring:
       hibernate:
         # MySQL 8 버전에 맞는 Dialect(방언) 설정
         dialect: org.hibernate.dialect.MySQL8Dialect
+        # sql 로깅을 위해 추가
+        format_sql: true
+        highlight_sql: true
 
-  # 로깅 레벨 설정
-  logging:
-    level:
-      # Hibernate가 실행하는 SQL 쿼리를 DEBUG 레벨로 로그에 출력
-      org.hibernate.SQL: DEBUG
+  flyway:
+    enabled: true # Flyway 활성화
+    # 마이그레이션 파일 위치 지정 (기본값)
+    locations: classpath:db/migration
+
+# 로깅 레벨 설정
+logging:
+  level:
+    # Hibernate가 실행하는 SQL 쿼리를 DEBUG 레벨로 로그에 출력
+    org.hibernate.SQL: DEBUG
 
 # 내장 웹 서버 설정
 server:
   port: 8080
+
+springdoc:
+  swagger-ui:
+    enabled: true

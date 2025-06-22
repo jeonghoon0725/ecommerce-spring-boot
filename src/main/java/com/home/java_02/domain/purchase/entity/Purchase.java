@@ -17,8 +17,10 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -26,6 +28,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 @Table
 @Entity
+@Getter
 @DynamicInsert
 @DynamicUpdate
 @NoArgsConstructor
@@ -60,5 +63,11 @@ public class Purchase {
     this.user = user;
     this.totalPrice = totalPrice;
     this.status = status;
+  }
+
+  public void setStatus(PurchaseStatus status) {
+    if (!ObjectUtils.isEmpty(status)) {
+      this.status = status;
+    }
   }
 }

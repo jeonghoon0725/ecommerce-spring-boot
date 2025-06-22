@@ -19,6 +19,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
   Optional<User> findUserByStatus(String status);
 
-  List<User> findAll();
+  @Query("SELECT u FROM User u JOIN FETCH u.purchases")
+  List<User> findAllWithPurchases();
 
 }
