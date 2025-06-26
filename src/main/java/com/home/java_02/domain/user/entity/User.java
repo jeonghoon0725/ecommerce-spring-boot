@@ -16,6 +16,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
@@ -37,9 +38,11 @@ public class User {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   long id;
 
+  @Setter
   @Column(nullable = false, length = 50)
   String name;
 
+  @Setter
   @Column
   String email;
 
