@@ -1,5 +1,6 @@
 package com.home.java_02.domain.user.controller;
 
+import com.home.java_02.common.annotation.Loggable;
 import com.home.java_02.common.response.ApiResponse;
 import com.home.java_02.domain.user.dto.UserCreateRequest;
 import com.home.java_02.domain.user.dto.UserRequest;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -28,8 +28,32 @@ public class UserController {
 
   private final UserService userService;
 
+  @Loggable
+  @GetMapping
+  public ApiResponse<List<UserSearchResponse>> findAll() {
+    // GET /api/users/12?email="test@naver.com"
+
+    //return ResponseEntity.status(200).build();
+
+    //return ResponseEntity.status(200).body(new HashMap<String, String>() {{
+    //put("name", "홍길동");
+    //}});
+
+    //return ResponseEntity.status(200).body(UserSearchResponse.builder().build());
+
+    //return ResponseEntity.ok().body(UserSearchResponse.builder().build());//200
+
+    return ApiResponse.success(userService.searchUser());
+
+  }
+
   @GetMapping("/{userId}")
-  public ApiResponse<List<UserSearchResponse>> findAll(
+  public ApiResponse<UserResponse> findById(@PathVariable Long userId) {
+    return ApiResponse.success(userService.getUserById(userId));
+  }
+  
+  /*@GetMapping("/{userId}")
+  public ApiResponse<UserSearchResponse> findById(
       @RequestParam(required = false) String email,
       @PathVariable Long userId
   ) {
@@ -47,7 +71,7 @@ public class UserController {
 
     return ApiResponse.success(userService.searchUser());
 
-  }
+  }*/
 
   @PostMapping
   public ApiResponse<UserResponse> create(@Valid @RequestBody UserCreateRequest request) {
@@ -72,6 +96,7 @@ public class UserController {
     return ResponseEntity.ok().build();
   }
 
+  
 
 /*
   private UserService userService;

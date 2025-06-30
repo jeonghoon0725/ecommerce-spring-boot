@@ -7,6 +7,7 @@ import com.home.java_02.domain.user.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,7 +17,7 @@ public class PurchaseService {
   private final ProductRepository productRepository;
   private final UserRepository userRepository;
 
-
+  @Transactional
   public void placePurchase(@Valid PurchaseRequest request) {
     
   }
