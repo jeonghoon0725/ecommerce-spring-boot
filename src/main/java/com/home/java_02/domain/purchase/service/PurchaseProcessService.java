@@ -5,14 +5,12 @@ import com.home.java_02.common.exception.ServiceExceptionCode;
 import com.home.java_02.domain.product.entity.Product;
 import com.home.java_02.domain.product.repository.ProductRepository;
 import com.home.java_02.domain.purchase.dto.PurchaseProductRequest;
-import com.home.java_02.domain.purchase.dto.PurchaseRequest;
 import com.home.java_02.domain.purchase.entity.Purchase;
 import com.home.java_02.domain.purchase.entity.PurchaseProduct;
 import com.home.java_02.domain.purchase.repository.PurchaseProductRepository;
 import com.home.java_02.domain.purchase.repository.PurchaseRepository;
 import com.home.java_02.domain.user.entity.User;
 import com.home.java_02.domain.user.repository.UserRepository;
-import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,54 +20,42 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class PurchaseService {
+public class PurchaseProcessService {
 
   private final PurchaseRepository purchaseRepository;
+  private final UserRepository userRepository;
   private final ProductRepository productRepository;
   private final PurchaseProductRepository purchaseProductRepository;
-  private final UserRepository userRepository;
-  private final PurchaseProcessService purchaseProcessService;
-  private final PurchaseCancelService purchaseCancelService;
 
-
-  //리팩토링 후 (단일 책임 원칙, SRP 적용)
-  public void processPurchase(@Valid PurchaseRequest request) {
-    User user = userRepository.findById(request.getUserId())
-        .orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_FOUND_USER));
-
-    purchaseProcessService.process(user, request.getPurchaseProducts());
-  }
-
-
-  public void cancelPurchase(@Valid PurchaseRequest request) {
-    User user = userRepository.findById(request.getUserId())
-        .orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_FOUND_USER));
-
-    purchaseCancelService.cancel(user, request.getPurchaseProducts());
-  }
-
-
-  //리팩토링 전
-  //하나의 메서드에서 처리, 역할 별로 분리하여
   @Transactional
-  public void createPurchase(PurchaseRequest request) {
-    User user = userRepository.findById(request.getUserId())
-        .orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_FOUND_USER));
+  public void process(User user, List<PurchaseProductRequest> purchaseItems) {
+    Purchase purchase = savePurchase(user);
+    List<PurchaseProduct> purchaseProducts = createPurchaseProducts(purchaseItems, purchase);
 
-    Purchase purchase = purchaseRepository.save(Purchase.builder()
+    BigDecimal totalPrice = calculateTotalPrice(purchaseProducts);
+
+    purchase.setTotalPrice(totalPrice);
+  }
+
+  //내부 동작들
+  private Purchase savePurchase(User user) {
+    return purchaseRepository.save(Purchase.builder()
         .user(user)
         .build());
+  }
 
-    BigDecimal totalPrice = BigDecimal.ZERO;
+  private List<PurchaseProduct> createPurchaseProducts(
+      List<PurchaseProductRequest> productRequests,
+      Purchase purchase
+  ) {
     List<PurchaseProduct> purchaseProducts = new ArrayList<>();
 
-    for (PurchaseProductRequest productRequest : request.getPurchaseProducts()) {
+    for (PurchaseProductRequest productRequest : productRequests) {
       Product product = productRepository.findById(productRequest.getProductId())
           .orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_FOUND_DATA));
 
-      if (productRequest.getQuantity() > product.getStock()) {
-        throw new ServiceException(ServiceExceptionCode.OUT_OF_STOCK_PRODUCT);
-      }
+      //재고수량 체크
+      validateStock(product, productRequest.getQuantity());
 
       product.reduceStock(productRequest.getQuantity());
 
@@ -81,14 +67,23 @@ public class PurchaseService {
           .build();
 
       purchaseProducts.add(purchaseProduct);
-      totalPrice = totalPrice.add(
-          product.getPrice().multiply(BigDecimal.valueOf(productRequest.getQuantity()))
-      );
     }
 
-    purchase.setTotalPrice(totalPrice);
     purchaseProductRepository.saveAll(purchaseProducts);
+
+    return purchaseProducts;
   }
 
+  private void validateStock(Product product, int requestedQuantity) {
+    if (requestedQuantity > product.getStock()) {
+      throw new ServiceException(ServiceExceptionCode.OUT_OF_STOCK_PRODUCT);
+    }
+  }
 
+  private BigDecimal calculateTotalPrice(List<PurchaseProduct> purchaseProducts) {
+    return purchaseProducts.stream()
+        .map(purchaseProduct -> purchaseProduct.getPrice()
+            .multiply(BigDecimal.valueOf(purchaseProduct.getQuantity())))
+        .reduce(BigDecimal.ZERO, BigDecimal::add);
+  }
 }

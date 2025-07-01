@@ -19,6 +19,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.annotations.CreationTimestamp;
@@ -43,6 +44,7 @@ public class Purchase {
   @JoinColumn(name = "user_id", nullable = false)// name이 대상 테이블_id 인 경우 생략 가능
   User user;
 
+  @Setter
   @Column
   BigDecimal totalPrice;
 

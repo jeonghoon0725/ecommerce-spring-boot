@@ -1,21 +1,14 @@
 package com.home.java_02.domain.purchase.dto;
 
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class PurchaseRequest {
-
-  Long id;
-
-  Long userId;
+public class PurchaseProductRequest {
 
   Long productId;
 
-  int quantity;
-
-  List<PurchaseProductRequest> purchaseProducts;
+  Integer quantity;
 }

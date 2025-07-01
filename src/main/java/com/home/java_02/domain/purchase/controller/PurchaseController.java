@@ -18,8 +18,8 @@ public class PurchaseController {
   private final PurchaseService purchaseService;
 
   @PostMapping
-  public ApiResponse<Void> placePurchase(@Valid @RequestBody PurchaseRequest request) {
-    purchaseService.placePurchase(request);
+  public ApiResponse<Void> savePurchase(@Valid @RequestBody PurchaseRequest request) {
+    purchaseService.processPurchase(request);
     return ApiResponse.success();
   }
 }
