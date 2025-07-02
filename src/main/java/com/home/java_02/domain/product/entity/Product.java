@@ -70,4 +70,8 @@ public class Product { // 상품
   public void reduceStock(Integer stock) {
     this.stock -= stock;
   }
+
+  public void increaseStock(Integer stock) {
+    this.stock += stock;
+  }
 }

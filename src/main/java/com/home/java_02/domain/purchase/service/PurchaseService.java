@@ -4,6 +4,7 @@ import com.home.java_02.common.exception.ServiceException;
 import com.home.java_02.common.exception.ServiceExceptionCode;
 import com.home.java_02.domain.product.entity.Product;
 import com.home.java_02.domain.product.repository.ProductRepository;
+import com.home.java_02.domain.purchase.dto.PurchaseCancelRequest;
 import com.home.java_02.domain.purchase.dto.PurchaseProductRequest;
 import com.home.java_02.domain.purchase.dto.PurchaseRequest;
 import com.home.java_02.domain.purchase.entity.Purchase;
@@ -32,7 +33,8 @@ public class PurchaseService {
   private final PurchaseCancelService purchaseCancelService;
 
 
-  //리팩토링 후 (단일 책임 원칙, SRP 적용)
+  //리팩토링 후 (단일 책임 원칙, SRP 적용 + 퍼사드 패턴)
+  @Transactional
   public void processPurchase(@Valid PurchaseRequest request) {
     User user = userRepository.findById(request.getUserId())
         .orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_FOUND_USER));
@@ -40,12 +42,9 @@ public class PurchaseService {
     purchaseProcessService.process(user, request.getPurchaseProducts());
   }
 
-
-  public void cancelPurchase(@Valid PurchaseRequest request) {
-    User user = userRepository.findById(request.getUserId())
-        .orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_FOUND_USER));
-
-    purchaseCancelService.cancel(user, request.getPurchaseProducts());
+  @Transactional
+  public void cancelPurchase(@Valid PurchaseCancelRequest request) {
+    purchaseCancelService.cancel(request.getPurchaseId(), request.getUserId());
   }
 
 
