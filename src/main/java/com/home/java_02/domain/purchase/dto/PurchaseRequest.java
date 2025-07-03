@@ -1,5 +1,6 @@
 package com.home.java_02.domain.purchase.dto;
 
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -9,13 +10,9 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PurchaseRequest {
 
-  Long id;
-
+  @NotNull
   Long userId;
 
-  Long productId;
-
-  int quantity;
-
-  List<PurchaseProductRequest> purchaseProducts;
+  @NotNull
+  List<PurchaseProductRequest> products;
 }

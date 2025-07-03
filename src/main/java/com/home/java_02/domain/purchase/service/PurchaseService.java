@@ -39,7 +39,7 @@ public class PurchaseService {
     User user = userRepository.findById(request.getUserId())
         .orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_FOUND_USER));
 
-    purchaseProcessService.process(user, request.getPurchaseProducts());
+    purchaseProcessService.process(user, request.getProducts());
   }
 
   @Transactional
@@ -62,7 +62,7 @@ public class PurchaseService {
     BigDecimal totalPrice = BigDecimal.ZERO;
     List<PurchaseProduct> purchaseProducts = new ArrayList<>();
 
-    for (PurchaseProductRequest productRequest : request.getPurchaseProducts()) {
+    for (PurchaseProductRequest productRequest : request.getProducts()) {
       Product product = productRepository.findById(productRequest.getProductId())
           .orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_FOUND_DATA));
 
