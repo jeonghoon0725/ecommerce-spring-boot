@@ -38,6 +38,10 @@ logging:
 # 내장 웹 서버 설정
 server:
   port: 8080
+  servlet:
+    session:
+      cookie:
+        http-only: true
 
 springdoc:
   swagger-ui:
