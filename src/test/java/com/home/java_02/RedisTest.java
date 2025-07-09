@@ -12,7 +12,7 @@ import redis.clients.jedis.Jedis;
 @SpringBootTest
 public class RedisTest {
 
-  private static final Logger log = LoggerFactory.getLogger(RedisTest.class.getName());
+  private static final Logger log = LoggerFactory.getLogger(RedisTest.class);
 
   @Autowired
   private Jedis jedis;
