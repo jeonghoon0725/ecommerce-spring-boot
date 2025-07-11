@@ -11,6 +11,7 @@ import com.home.java_02.domain.user.entity.User;
 import com.home.java_02.domain.user.repository.UserRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
   private final UserRepository userRepository;
-
+  private final PasswordEncoder passwordEncoder;
   private final UserMapper userMapper; //mapstruct 사용
 
   public void save() {
@@ -28,7 +29,13 @@ public class UserService {
 
   @Transactional
   public UserResponse createUser(UserCreateRequest request) {
-    return null;
+    return userMapper.toResponse(
+        userRepository.save(User.builder()
+            .name(request.getName())
+            .email(request.getEmail())
+            .passwordHash(passwordEncoder.encode(request.getPassword()))
+            .build())
+    );
   }
 
   public List<UserSearchResponse> searchUser() {

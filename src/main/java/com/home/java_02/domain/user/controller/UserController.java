@@ -75,9 +75,8 @@ public class UserController {
 
   @PostMapping
   public ApiResponse<UserResponse> create(@Valid @RequestBody UserCreateRequest request) {
-    userService.save();
-
-    return ApiResponse.success(userService.createUser(request));
+    userService.createUser(request);
+    return ApiResponse.success();
   }
 
   @PutMapping("{userId}")

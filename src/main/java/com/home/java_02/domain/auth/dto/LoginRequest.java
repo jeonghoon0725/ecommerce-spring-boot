@@ -8,8 +8,8 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class LoginRequest {
 
-  Long Id;
-  
+  Long id;
+
   String email;
 
   String password;
