@@ -3,9 +3,10 @@ package com.home.java_02;
 import com.home.java_02.domain.user.entity.User;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
-
+@EnableAsync
 @SpringBootApplication
 @EnableRedisHttpSession(maxInactiveIntervalInSeconds = 60 * 10) // Redis를 세션 저장소로 사용하도록 활성화 (10분)
 public class Java02Application {

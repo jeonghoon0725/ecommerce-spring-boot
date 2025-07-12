@@ -1,6 +1,6 @@
 package com.home.java_02.domain.product.entity;
 
-import com.home.java_02.domain.catagory.entity.Category;
+import com.home.java_02.domain.category.entity.Category;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
