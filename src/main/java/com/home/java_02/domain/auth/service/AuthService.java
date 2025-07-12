@@ -36,7 +36,7 @@ public class AuthService {
         new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
     );
 
-    SecurityContextHolder.getContext().setAuthentication(authentication);
+    SecurityContextHolder.getContext().setAuthentication(authentication);//레디스 키 삽입
 
     return LoginResponse.builder()
         .userId(user.getId())

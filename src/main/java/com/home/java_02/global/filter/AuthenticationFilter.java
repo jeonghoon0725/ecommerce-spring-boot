@@ -22,6 +22,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class AuthenticationFilter extends OncePerRequestFilter {
 
+  //컨트롤러 전에
   private final ObjectMapper objectMapper;
 
   @Override
