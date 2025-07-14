@@ -45,12 +45,12 @@ public class SecurityConfig {
             .anyRequest().authenticated()
         )
         .sessionManagement(session -> session
-            .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)//기존 세션을 사용
-            .maximumSessions(1)//계정당이 아닌 클라이언트당
-            .maxSessionsPreventsLogin(false)//계정당 최대 세션 개수 - true의 경우 기존 세션 삭제, 신규 세션 사용
+            .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)  //기존 세션을 사용
+            .maximumSessions(1)  //계정당이 아닌 클라이언트당
+            .maxSessionsPreventsLogin(false)  //계정당 최대 세션 개수 - true의 경우 기존 세션 삭제, 신규 세션 사용
         )
         .addFilterBefore(authenticationFilter,
-            UsernamePasswordAuthenticationFilter.class);//뒤에 전에 먼저 인증 필터
+            UsernamePasswordAuthenticationFilter.class);  //앞에 spring filter interceptor 보다 먼저 실행되는 filter
 
     return http.build();
   }

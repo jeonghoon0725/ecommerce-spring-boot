@@ -40,7 +40,6 @@ public class PurchaseCancelService {
 
     restoreProductStock(purchaseProducts);
 
-    //todo
     //결제 취소 API
     //주문 취소 알람
 
