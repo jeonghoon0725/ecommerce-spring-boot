@@ -1,0 +1,2 @@
+ALTER TABLE `user`
+    ADD name VARCHAR(50) NOT NULL;
