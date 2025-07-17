@@ -81,3 +81,26 @@ ORDER BY created_at DESC, id DESC
     LIMIT 10;
 
  */
+/*
+**EXPLAIN
+    id      쿼리 내의 SELECT 문 실행 순서. 숫자가 높을수록 먼저 실행
+    *type	(가장 중요) 데이터 접근 방식. 성능 핵심 지표
+    key	    실제로 사용된 인덱스의 이름. NULL이면 인덱스를 사용 X
+    rows	쿼리를 실행하기 위해 스캔할 것으로 예측되는 행의 수
+    *Extra	쿼리 실행에 대한 추가 정보. Using filesort, Using temporary 등 발생 시 주의
+
+*type
+    ALL     FULL SCAN
+    index   INDEX FULL SCAN
+    range   INDEX RANGE SCAN
+    ref     인덱스를 사용한 조인 동등 비교
+    eq_ref  PK or FK 조인 동등 비교
+    const   PK or Unique 행 검색
+    system  테이블에 행 단 하나
+
+*Extra
+    Using where      WHERE 절을 통해 데이터를 필터링했음을 의미 / type=ALL, Using where가 있다면 전체 데이터를 읽고 필터링하는 비효율적인 상황
+    Using filesort   ORDER BY 구문을 처리하기 위해 인덱스를 사용하지 못하고, 별도의 정렬 작업을 수행했다는 의미
+    Using temporary  GROUP BY 나 JOIN 등을 처리하기 위해 임시 테이블을 생성했다는 의미
+
+ */
