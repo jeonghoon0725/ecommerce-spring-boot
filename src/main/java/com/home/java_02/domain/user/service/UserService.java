@@ -2,13 +2,15 @@ package com.home.java_02.domain.user.service;
 
 import com.home.java_02.common.exception.ServiceException;
 import com.home.java_02.common.exception.ServiceExceptionCode;
-import com.home.java_02.domain.user.Mapper.UserMapper;
 import com.home.java_02.domain.user.dto.UserCreateRequest;
+import com.home.java_02.domain.user.dto.UserRankDto;
 import com.home.java_02.domain.user.dto.UserResponse;
 import com.home.java_02.domain.user.dto.UserSearchResponse;
 import com.home.java_02.domain.user.dto.UserUpdateRequest;
 import com.home.java_02.domain.user.entity.User;
+import com.home.java_02.domain.user.mapper.UserMapper;
 import com.home.java_02.domain.user.repository.UserRepository;
+import com.home.java_02.domain.user.repository.UserSqlMapper;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +24,7 @@ public class UserService {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
   private final UserMapper userMapper; //mapstruct 사용
+  private final UserSqlMapper userSqlMapper;
 
   public void save() {
 
@@ -102,5 +105,15 @@ public class UserService {
   private User getUser(Long userId) {
     return userRepository.findById(userId)
         .orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_FOUND_USER));
+  }
+
+  public void findTopSpendingUser() {
+    int topN = 5; // 상위 5명 조회
+    List<UserRankDto> topCustomers = userSqlMapper.findTopSpendingUser(topN);
+
+    System.out.println("🏆 우수 회원 Top " + topN);
+    topCustomers.forEach(rank ->
+        System.out.println(rank.getName() + ": " + rank.getTotalSpent() + "원")
+    );
   }
 }

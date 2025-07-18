@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.home.java_02.domain.user.repository.UserSqlMapper">
+
+  <select id="getUserById" parameterType="Long"
+    resultType="com.home.java_02.domain.user.dto.SearchUserDto">
+    SELECT id,
+    name,
+    email,
+    password_hash,
+    created_at,
+    updated_at
+    FROM user
+    <where>
+      <!--      <if test="name != null">AND name = #{name}</if>-->
+      <!--      <if test="email != null">AND name = #{email}</if>-->
+      <choose>
+        <when test="name != null">name = #{name}</when>
+        <when test="email != null">email = #{email}</when>
+        <otherwise>1 = 1</otherwise>
+      </choose>
+    </where>
+  </select>
+
+  <insert id="insertUser" parameterType="com.home.java_02.domain.user.dto.UserDto">
+    INSERT INTO user
+    VALUES (#{name}, #{email}, #{passwordHash}, now(), now())
+  </insert>
+
+  <insert id="insertUserList"
+    parameterType="com.home.java_02.domain.user.dto.UserDto">
+    INSERT INTO user VALUES
+    <foreach collection="users" item="user" separator=",">
+      (#{user.name}, #{user.email}, #{user.passwordHash}, now(), now())
+    </foreach>
+  </insert>
+
+  <update id="updateUser" parameterType="com.home.java_02.domain.user.dto.UserDto">
+    UPDATE user
+    SET name = #{name}
+    WHERE id = #{id}
+  </update>
+
+  <delete id="deleteUser" parameterType="Long">
+    DELETE
+    FROM user
+    where id = #{id}
+  </delete>
+
+  <select id="findTopSpendingUser" parameterType="int"
+    resultType="com.home.java_02.domain.user.dto.UserRankDto">
+    SELECT u.id,
+           u.name,
+           SUM(p.total_price) AS totalSpent
+    FROM user u
+           JOIN
+         purchase p ON u.id = p.user_id
+    WHERE p.status = 'COMPLETED' -- '완료'된 구매만 집계
+    GROUP BY u.id, u.name
+    ORDER BY totalSpent DESC
+      LIMIT #{limit}
+  </select>
+</mapper>

@@ -1,4 +1,4 @@
-package com.home.java_02.domain.user.Mapper;
+package com.home.java_02.domain.user.mapper;
 
 
 import com.home.java_02.domain.user.dto.UserCreateRequest;

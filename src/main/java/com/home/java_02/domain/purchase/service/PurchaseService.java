@@ -4,6 +4,7 @@ import com.home.java_02.common.exception.ServiceException;
 import com.home.java_02.common.exception.ServiceExceptionCode;
 import com.home.java_02.domain.product.entity.Product;
 import com.home.java_02.domain.product.repository.ProductRepository;
+import com.home.java_02.domain.purchase.dto.MonthlySalesDto;
 import com.home.java_02.domain.purchase.dto.PurchaseCancelRequest;
 import com.home.java_02.domain.purchase.dto.PurchaseProductRequest;
 import com.home.java_02.domain.purchase.dto.PurchaseRequest;
@@ -11,12 +12,15 @@ import com.home.java_02.domain.purchase.entity.Purchase;
 import com.home.java_02.domain.purchase.entity.PurchaseProduct;
 import com.home.java_02.domain.purchase.repository.PurchaseProductRepository;
 import com.home.java_02.domain.purchase.repository.PurchaseRepository;
+import com.home.java_02.domain.purchase.repository.PurchaseSqlMapper;
 import com.home.java_02.domain.user.entity.User;
 import com.home.java_02.domain.user.repository.UserRepository;
 import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,9 +33,23 @@ public class PurchaseService {
   private final ProductRepository productRepository;
   private final PurchaseProductRepository purchaseProductRepository;
   private final UserRepository userRepository;
+  private final PurchaseSqlMapper purchaseSqlMapper;
+
   private final PurchaseProcessService purchaseProcessService;
   private final PurchaseCancelService purchaseCancelService;
 
+  public void findTopSpendingCustomers() {
+    Map<String, Object> dateRange = new HashMap<>();
+    dateRange.put("startDate", "2025-01-01 00:00:00");
+    dateRange.put("endDate", "2025-12-31 23:59:59");
+
+    List<MonthlySalesDto> monthlySales = purchaseSqlMapper.getMonthlySalesStats(dateRange);
+
+    System.out.println("📅 2025년 월별 매출 통계");
+    monthlySales.forEach(stat ->
+        System.out.println(stat.getSalesMonth() + ": " + stat.getTotalSales() + "원")
+    );
+  }
 
   //리팩토링 후 (단일 책임 원칙, SRP 적용 + 퍼사드 패턴)
   @Transactional
@@ -47,6 +65,19 @@ public class PurchaseService {
     purchaseCancelService.cancel(request.getPurchaseId(), request.getUserId());
   }
 
+  public void getMonthlySalesStats() {
+    Map<String, Object> dateRange = new HashMap<>();
+    dateRange.put("startDate", "2025-01-01 00:00:00");
+    dateRange.put("endDate", "2025-12-31 23:59:59");
+
+    List<MonthlySalesDto> monthlySales = purchaseSqlMapper.getMonthlySalesStats(dateRange);
+
+    System.out.println("📅 2025년 월별 매출 통계");
+    monthlySales.forEach(stat ->
+        System.out.println(stat.getSalesMonth() + ": " + stat.getTotalSales() + "원")
+    );
+
+  }
 
   //리팩토링 전
   //하나의 메서드에서 처리, 역할 별로 분리하여

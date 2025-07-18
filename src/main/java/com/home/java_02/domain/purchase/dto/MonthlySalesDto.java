@@ -1,4 +1,4 @@
-package com.home.java_02.domain.user.dto;
+package com.home.java_02.domain.purchase.dto;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -8,17 +8,8 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserRequest {
+public class MonthlySalesDto {
 
-  String name;
-
-  String email;
-
-  String password;
-
-  /**
-   * { "name" : "홍길동", "email" : "test@naver.com", ...}
-   */
-
-
+  String salesMonth;
+  Double totalSales;
 }

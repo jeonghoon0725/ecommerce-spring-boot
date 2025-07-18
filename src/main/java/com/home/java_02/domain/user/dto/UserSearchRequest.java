@@ -8,17 +8,11 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserRequest {
+public class UserSearchRequest {
 
   String name;
 
   String email;
-
-  String password;
-
-  /**
-   * { "name" : "홍길동", "email" : "test@naver.com", ...}
-   */
 
 
 }

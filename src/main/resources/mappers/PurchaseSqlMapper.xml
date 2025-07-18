@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.home.java_02.domain.purchase.repository.PurchaseSqlMapper">
+
+  <select id="findPurchasesWithPaging"
+    parameterType="com.home.java_02.domain.purchase.dto.PurchaseSearchCondition"
+    resultType="com.home.java_02.domain.purchase.dto.PurchaseDto">
+    SELECT
+    purchase_id, user_id, total_price, status, created_at
+    FROM
+    purchase
+    <where>
+      <if test="status != null and status != ''">
+        AND status = #{status}
+      </if>
+      <if test="customerId != null">
+        AND customerId = #{customerId}
+      </if>
+    </where>
+    ORDER BY
+    created_at DESC
+    LIMIT #{limit} OFFSET #{offset}
+  </select>
+
+  <select id="getMonthlySalesStats" parameterType="map"
+    resultType="com.home.java_02.domain.purchase.dto.MonthlySalesDto">
+    SELECT DATE_FORMAT(p.created_at, '%Y-%m') AS salesMonth,
+           SUM(p.total_price)                 AS totalSales
+    FROM purchase p
+    WHERE p.created_at BETWEEN #{startDate} AND #{endDate}
+      AND p.status = 'COMPLETED'
+    GROUP BY salesMonth
+    ORDER BY salesMonth DESC
+  </select>
+</mapper>
