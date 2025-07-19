@@ -2,19 +2,25 @@ package com.home.java_02.domain.purchase.dto;
 
 public class PurchaseSearchCondition {
 
-  private Long customerId; // 검색할 고객 ID
+  private Long userId; // 검색할 고객 ID
   private String status;   // 검색할 구매 상태
   private int limit;       // 페이지 당 데이터 수
   private int offset;      // 건너뛸 데이터 수
 
   // Getters and Setters
-
-  public Long getCustomerId() {
-    return customerId;
+  public PurchaseSearchCondition(Long userId, String status, int limit, int offset) {
+    this.userId = userId;
+    this.status = status;
+    this.limit = limit;
+    this.offset = offset;
   }
 
-  public void setCustomerId(Long customerId) {
-    this.customerId = customerId;
+  public Long getUserId() {
+    return userId;
+  }
+
+  public void setUserId(Long userId) {
+    this.userId = userId;
   }
 
   public String getStatus() {

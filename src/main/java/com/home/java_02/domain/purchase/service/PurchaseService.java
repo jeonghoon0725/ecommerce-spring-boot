@@ -8,6 +8,7 @@ import com.home.java_02.domain.purchase.dto.MonthlySalesDto;
 import com.home.java_02.domain.purchase.dto.PurchaseCancelRequest;
 import com.home.java_02.domain.purchase.dto.PurchaseProductRequest;
 import com.home.java_02.domain.purchase.dto.PurchaseRequest;
+import com.home.java_02.domain.purchase.dto.PurchaseSearchCondition;
 import com.home.java_02.domain.purchase.entity.Purchase;
 import com.home.java_02.domain.purchase.entity.PurchaseProduct;
 import com.home.java_02.domain.purchase.repository.PurchaseProductRepository;
@@ -38,7 +39,19 @@ public class PurchaseService {
   private final PurchaseProcessService purchaseProcessService;
   private final PurchaseCancelService purchaseCancelService;
 
-  public void findTopSpendingCustomers() {
+  public void findTopSpendingUser() {
+    // 1번 고객의 'COMPLETED' 상태 구매 내역 조회
+    PurchaseSearchCondition condition = PurchaseSearchCondition.builder()
+        .userId(1L)
+        .status("COMPLETED")
+        .limit(10)
+        .offset(0)
+        .build();
+
+    List<Purchase> purchases = purchaseSqlMapper.findPurchasesWithPaging(condition);
+  }
+
+  public void getMonthlySalesStats() {
     Map<String, Object> dateRange = new HashMap<>();
     dateRange.put("startDate", "2025-01-01 00:00:00");
     dateRange.put("endDate", "2025-12-31 23:59:59");
@@ -63,20 +76,6 @@ public class PurchaseService {
   @Transactional
   public void cancelPurchase(@Valid PurchaseCancelRequest request) {
     purchaseCancelService.cancel(request.getPurchaseId(), request.getUserId());
-  }
-
-  public void getMonthlySalesStats() {
-    Map<String, Object> dateRange = new HashMap<>();
-    dateRange.put("startDate", "2025-01-01 00:00:00");
-    dateRange.put("endDate", "2025-12-31 23:59:59");
-
-    List<MonthlySalesDto> monthlySales = purchaseSqlMapper.getMonthlySalesStats(dateRange);
-
-    System.out.println("📅 2025년 월별 매출 통계");
-    monthlySales.forEach(stat ->
-        System.out.println(stat.getSalesMonth() + ": " + stat.getTotalSales() + "원")
-    );
-
   }
 
   //리팩토링 전

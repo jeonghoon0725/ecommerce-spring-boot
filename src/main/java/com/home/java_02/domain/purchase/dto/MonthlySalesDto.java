@@ -10,6 +10,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MonthlySalesDto {
 
+  
   String salesMonth;
   Double totalSales;
 }

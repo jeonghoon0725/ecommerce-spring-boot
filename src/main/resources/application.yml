@@ -40,6 +40,8 @@ logging:
   level:
     # Hibernate가 실행하는 SQL 쿼리를 DEBUG 레벨로 로그에 출력
     org.hibernate.SQL: DEBUG
+    org.mybatis: DEBUG
+    org.apache.ibatis: DEBUG
 
 # 내장 웹 서버 설정
 server:
@@ -56,4 +58,5 @@ springdoc:
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   mapper-locations: classpath:mappers/*.xml

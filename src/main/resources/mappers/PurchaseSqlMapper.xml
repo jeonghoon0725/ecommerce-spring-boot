@@ -8,15 +8,15 @@
     parameterType="com.home.java_02.domain.purchase.dto.PurchaseSearchCondition"
     resultType="com.home.java_02.domain.purchase.dto.PurchaseDto">
     SELECT
-    purchase_id, user_id, total_price, status, created_at
+    id, user_id, total_price, status, created_at
     FROM
     purchase
     <where>
       <if test="status != null and status != ''">
         AND status = #{status}
       </if>
-      <if test="customerId != null">
-        AND customerId = #{customerId}
+      <if test="userId != null">
+        AND user_id = #{userId}
       </if>
     </where>
     ORDER BY
