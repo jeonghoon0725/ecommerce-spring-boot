@@ -1,0 +1,2 @@
+ALTER TABLE product
+    ADD COLUMN version INT DEFAULT 0;
