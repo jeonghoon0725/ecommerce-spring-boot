@@ -1,5 +1,6 @@
 package com.home.java_02.domain.purchase.service;
 
+import com.home.java_02.common.enums.TaskType;
 import com.home.java_02.common.exception.ServiceException;
 import com.home.java_02.common.exception.ServiceExceptionCode;
 import com.home.java_02.domain.product.entity.Product;
@@ -14,6 +15,8 @@ import com.home.java_02.domain.purchase.entity.PurchaseProduct;
 import com.home.java_02.domain.purchase.repository.PurchaseProductRepository;
 import com.home.java_02.domain.purchase.repository.PurchaseRepository;
 import com.home.java_02.domain.purchase.repository.PurchaseSqlMapper;
+import com.home.java_02.domain.task.entity.TaskQueue;
+import com.home.java_02.domain.task.service.TaskQueueService;
 import com.home.java_02.domain.user.entity.User;
 import com.home.java_02.domain.user.repository.UserRepository;
 import jakarta.validation.Valid;
@@ -38,6 +41,7 @@ public class PurchaseService {
 
   private final PurchaseProcessService purchaseProcessService;
   private final PurchaseCancelService purchaseCancelService;
+  private final TaskQueueService taskQueueService;
 
   public void findTopSpendingUser() {
     // 1번 고객의 'COMPLETED' 상태 구매 내역 조회
@@ -62,6 +66,30 @@ public class PurchaseService {
     monthlySales.forEach(stat ->
         System.out.println(stat.getSalesMonth() + ": " + stat.getTotalSales() + "원")
     );
+  }
+
+  @Transactional
+  public void purchaseRequest(PurchaseRequest request) {
+    TaskQueue taskQueue = taskQueueService.requestQueue(TaskType.PURCHASE);
+
+    purchaseProcess(taskQueue.getId(), request);
+  }
+
+  public void purchaseProcess(Long taskQueueId, PurchaseRequest request) {
+    taskQueueService.processQueueById(taskQueueId, (taskQueue) -> {
+      User user = userRepository.findById(request.getUserId())
+          .orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_FOUND_USER));
+
+      Purchase purchase = purchaseProcessService.savePurchase(user);
+
+      taskQueue.setEventId(purchase.getId());
+
+      List<PurchaseProduct> purchaseProducts = purchaseProcessService.createPurchaseProducts(
+          request.getProducts(), purchase);
+
+      BigDecimal totalPrice = purchaseProcessService.calculateTotalPrice(purchaseProducts);
+      purchase.setTotalPrice(totalPrice);
+    });
   }
 
   //리팩토링 후 (단일 책임 원칙, SRP 적용 + 퍼사드 패턴)

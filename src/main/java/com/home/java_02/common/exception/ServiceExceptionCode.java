@@ -16,7 +16,8 @@ public enum ServiceExceptionCode {
   INSUFFICIENT_STOCK("재고가 부족합니다."),
   NOT_FOUND_PRODUCT("상품을 찾을 수 없습니다."),
   NOT_FOUND_PURCHASE("구매내역을 찾을수 없습니다."),
-  CANNOT_CANCEL("취소 불가능합니다.");
-
+  CANNOT_CANCEL("취소 불가능합니다."),
+  NOT_FOUND_TASK("작업 요청을 찾을 수 없습니다."),
+  ;
   final String message;
 }

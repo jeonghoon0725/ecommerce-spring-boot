@@ -39,7 +39,7 @@ public class PurchaseProcessService {
   }
 
   //내부 동작들
-  private Purchase savePurchase(User user) {
+  public Purchase savePurchase(User user) {
     return purchaseRepository.save(Purchase.builder()
         .user(user)
         .totalPrice(BigDecimal.ZERO)
@@ -47,7 +47,7 @@ public class PurchaseProcessService {
         .build());
   }
 
-  private List<PurchaseProduct> createPurchaseProducts(
+  public List<PurchaseProduct> createPurchaseProducts(
       List<PurchaseProductRequest> productRequests,
       Purchase purchase
   ) {
@@ -83,7 +83,7 @@ public class PurchaseProcessService {
     }
   }
 
-  private BigDecimal calculateTotalPrice(List<PurchaseProduct> purchaseProducts) {
+  public BigDecimal calculateTotalPrice(List<PurchaseProduct> purchaseProducts) {
     return purchaseProducts.stream()
         .map(purchaseProduct -> purchaseProduct.getPrice()
             .multiply(BigDecimal.valueOf(purchaseProduct.getQuantity())))
