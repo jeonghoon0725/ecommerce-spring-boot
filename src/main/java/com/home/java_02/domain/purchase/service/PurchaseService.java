@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -43,6 +44,7 @@ public class PurchaseService {
   private final PurchaseCancelService purchaseCancelService;
   private final TaskQueueService taskQueueService;
 
+  @Transactional(readOnly = true)
   public void findTopSpendingUser() {
     // 1번 고객의 'COMPLETED' 상태 구매 내역 조회
     PurchaseSearchCondition condition = PurchaseSearchCondition.builder()
@@ -55,6 +57,7 @@ public class PurchaseService {
     List<Purchase> purchases = purchaseSqlMapper.findPurchasesWithPaging(condition);
   }
 
+  @Transactional(readOnly = true)
   public void getMonthlySalesStats() {
     Map<String, Object> dateRange = new HashMap<>();
     dateRange.put("startDate", "2025-01-01 00:00:00");
@@ -68,28 +71,21 @@ public class PurchaseService {
     );
   }
 
+  // 최상위 트랜잭션 시작 (기본값: Propagation.REQUIRED)
   @Transactional
   public void purchaseRequest(PurchaseRequest request) {
+    User user = getUser(request.getUserId());
+
     TaskQueue taskQueue = taskQueueService.requestQueue(TaskType.PURCHASE);
 
-    purchaseProcess(taskQueue.getId(), request);
+    purchaseProcessService.process(taskQueue.getId(), request, user);
   }
 
-  public void purchaseProcess(Long taskQueueId, PurchaseRequest request) {
-    taskQueueService.processQueueById(taskQueueId, (taskQueue) -> {
-      User user = userRepository.findById(request.getUserId())
-          .orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_FOUND_USER));
-
-      Purchase purchase = purchaseProcessService.savePurchase(user);
-
-      taskQueue.setEventId(purchase.getId());
-
-      List<PurchaseProduct> purchaseProducts = purchaseProcessService.createPurchaseProducts(
-          request.getProducts(), purchase);
-
-      BigDecimal totalPrice = purchaseProcessService.calculateTotalPrice(purchaseProducts);
-      purchase.setTotalPrice(totalPrice);
-    });
+  // SUPPORTS: 트랜잭션이 있으면 참여, 없으면 없이 실행
+  @Transactional(propagation = Propagation.SUPPORTS)
+  public User getUser(Long userId) {
+    return userRepository.findById(userId)
+        .orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_FOUND_USER));
   }
 
   //리팩토링 후 (단일 책임 원칙, SRP 적용 + 퍼사드 패턴)

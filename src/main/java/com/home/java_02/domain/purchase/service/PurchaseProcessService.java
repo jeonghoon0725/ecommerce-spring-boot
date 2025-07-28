@@ -6,17 +6,21 @@ import com.home.java_02.common.exception.ServiceExceptionCode;
 import com.home.java_02.domain.product.entity.Product;
 import com.home.java_02.domain.product.repository.ProductRepository;
 import com.home.java_02.domain.purchase.dto.PurchaseProductRequest;
+import com.home.java_02.domain.purchase.dto.PurchaseRequest;
 import com.home.java_02.domain.purchase.entity.Purchase;
 import com.home.java_02.domain.purchase.entity.PurchaseProduct;
 import com.home.java_02.domain.purchase.repository.PurchaseProductRepository;
 import com.home.java_02.domain.purchase.repository.PurchaseRepository;
+import com.home.java_02.domain.task.service.TaskQueueService;
 import com.home.java_02.domain.user.entity.User;
 import com.home.java_02.domain.user.repository.UserRepository;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -27,8 +31,28 @@ public class PurchaseProcessService {
   private final UserRepository userRepository;
   private final ProductRepository productRepository;
   private final PurchaseProductRepository purchaseProductRepository;
+  private final TaskQueueService taskQueueService;
 
-  @Transactional
+  @Async
+  //@Transactional(propagation = Propagation.REQUIRES_NEW) // 항상 자신만의 새로운 트랜잭션을 시작, 부모와 별도 롤백, 혼자 롤백 가능
+  @Transactional(propagation = Propagation.NESTED) //  기존 트랜잭션 안에서 서브 트랜잭션, 부모와 함께 롤백, 혼자 롤백 가능
+  public void process(Long taskQueueId, PurchaseRequest request, User user) {
+    taskQueueService.processQueueById(taskQueueId, (taskQueue) -> {
+      Purchase purchase = savePurchase(user);
+
+      taskQueue.setEventId(purchase.getId());
+
+      List<PurchaseProduct> purchaseProducts = createPurchaseProducts(
+          request.getProducts(),
+          purchase);
+
+      BigDecimal totalPrice = calculateTotalPrice(purchaseProducts);
+      purchase.setTotalPrice(totalPrice);
+    });
+  }
+
+  // REQUIRED: 항상 트랜잭션을 보장
+  @Transactional(propagation = Propagation.REQUIRED)
   public void process(User user, List<PurchaseProductRequest> purchaseItems) {
     Purchase purchase = savePurchase(user);
     List<PurchaseProduct> purchaseProducts = createPurchaseProducts(purchaseItems, purchase);
@@ -39,7 +63,7 @@ public class PurchaseProcessService {
   }
 
   //내부 동작들
-  public Purchase savePurchase(User user) {
+  private Purchase savePurchase(User user) {
     return purchaseRepository.save(Purchase.builder()
         .user(user)
         .totalPrice(BigDecimal.ZERO)
@@ -47,7 +71,7 @@ public class PurchaseProcessService {
         .build());
   }
 
-  public List<PurchaseProduct> createPurchaseProducts(
+  private List<PurchaseProduct> createPurchaseProducts(
       List<PurchaseProductRequest> productRequests,
       Purchase purchase
   ) {
@@ -83,7 +107,7 @@ public class PurchaseProcessService {
     }
   }
 
-  public BigDecimal calculateTotalPrice(List<PurchaseProduct> purchaseProducts) {
+  private BigDecimal calculateTotalPrice(List<PurchaseProduct> purchaseProducts) {
     return purchaseProducts.stream()
         .map(purchaseProduct -> purchaseProduct.getPrice()
             .multiply(BigDecimal.valueOf(purchaseProduct.getQuantity())))
