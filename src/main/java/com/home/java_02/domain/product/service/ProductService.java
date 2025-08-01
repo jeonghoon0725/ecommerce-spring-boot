@@ -19,14 +19,19 @@ public class ProductService {
 
   private final ProductRepository productRepository;
 
+  @Transactional(readOnly = true)
   public List<ProductResponse> getAllProducts() {
     return productRepository.findAll().stream()
         .map(product -> ProductResponse.builder()
             .id(product.getId())
+            .categoryId(product.getCategory().getId())
             .name(product.getName())
+            .description(product.getDescription())
             .price(product.getPrice())
             .stock(product.getStock())
-            .build()).toList();
+            .createdAt(product.getCreatedAt())
+            .build())
+        .toList();
   }
 
   /**

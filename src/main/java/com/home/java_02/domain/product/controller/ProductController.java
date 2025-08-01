@@ -18,7 +18,7 @@ public class ProductController {
 
   @GetMapping
   public ApiResponse<List<ProductResponse>> getProducts() {
-    productService.getAllProducts();
+    //productService.getAllProducts();
     return ApiResponse.success(productService.getAllProducts());
   }
 }
