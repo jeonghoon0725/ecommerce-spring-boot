@@ -70,3 +70,12 @@ mybatis:
     map-underscore-to-camel-case: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   mapper-locations: classpath:mappers/*.xml
+
+external:
+  external-shop:
+    url: http://localhost:3001
+
+gemini:
+  api:
+    key:
+    url: https://generativelanguage.googleapis.com
