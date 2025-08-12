@@ -24,7 +24,7 @@ public class SecurityConfig {
       "/public/**", "/api/swagger-ui/**", "/swagger-ui/**", "/swagger-ui.html",
       "/api/v3/api-docs/**", "/v3/api-docs/**", "/favicon.ico", "/actuator/**",
       "/swagger-resources/**", "/external/**", "/api/auth/**", "/api/users/availability",
-      "/api/users",
+      "/api/users", "/api/products/**"
   };
 
   private final AuthenticationFilter authenticationFilter;

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 )
 public interface ExternalShopClient {
 
-  // http://location:3001/products?page=1&size=10
+  // http://localhost:3001/products?page=1&size=10
   @GetMapping("/products")
   ExternalProductResponse getProducts(@RequestParam("page") Integer page,
       @RequestParam("size") Integer size);

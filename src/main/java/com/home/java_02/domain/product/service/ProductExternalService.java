@@ -64,7 +64,7 @@ public class ProductExternalService {
   @Transactional
   @Retryable(value = ServiceException.class, maxAttempts = 10, backoff = @Backoff(delay = 1000))
   public void saveAllExternalProducts() {
-    int page = 0;
+    int page = 1;
     int pageSize = 10;
     boolean lastPage = false;
 
